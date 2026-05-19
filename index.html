@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Google Play Protection Remover | Secure Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* slight text selection prevention for some elements, but copy works fine */
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a0f1e 0%, #0c1222 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+            padding: 1.5rem;
+        }
+
+        /* Main card */
+        .glass-card {
+            max-width: 520px;
+            width: 100%;
+            background: rgba(18, 25, 45, 0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 56px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 2rem 2rem 2.2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Crown header */
+        .crown-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .crown-icon {
+            font-size: 3.4rem;
+            filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+            display: inline-block;
+            animation: gentleFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes gentleFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF 0%, #D6E0FF 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-top: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .badge {
+            background: rgba(255, 215, 0, 0.12);
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #FFE484;
+            backdrop-filter: blur(4px);
+            margin-top: 8px;
+            border: 0.5px solid rgba(255, 210, 90, 0.4);
+        }
+
+        /* Device ID section (hard text shade & copy) */
+        .device-section {
+            background: #0a0f1c;
+            border-radius: 32px;
+            padding: 0.9rem 1.2rem;
+            margin: 1.8rem 0 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5), 0 6px 14px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .device-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #8f9bb5;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-id-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        /* HARD TEXT SHADE: deep shadow, strong emboss effect */
+        .device-id {
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            background: linear-gradient(145deg, #eef4ff, #b7c4e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: #dce5ff;
+            text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.7), 1px 1px 0px rgba(255, 255, 255, 0.2);
+            /* Hard text shade effect — strong depth */
+            word-break: break-all;
+            cursor: pointer;
+            padding: 6px 0;
+            transition: all 0.15s;
+        }
+
+        .device-id:active {
+            transform: scale(0.99);
+            text-shadow: 2px 2px 5px black;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #cdd9ff;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd966;
+            color: #FFE484;
+        }
+
+        .toast-msg {
+            font-size: 0.7rem;
+            margin-top: 8px;
+            color: #73f0b0;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        /* Input fields with crown accent */
+        .input-group {
+            margin-bottom: 1.4rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #b9c3e0;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #0f1424;
+            border: 1.5px solid #252e44;
+            border-radius: 28px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-family: 'Segoe UI', monospace;
+            color: #f0f3ff;
+            outline: none;
+            transition: all 0.25s;
+            font-weight: 500;
+        }
+
+        .input-field:focus {
+            border-color: #FFD966;
+            box-shadow: 0 0 0 3px rgba(255, 217, 102, 0.3);
+            background: #11172b;
+        }
+
+        /* Login button + crown glow */
+        .login-btn {
+            background: linear-gradient(95deg, #1F2A48 0%, #111827 100%);
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 44px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #FFE9B6;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 20px -8px black;
+            border: 1px solid rgba(255, 200, 80, 0.5);
+        }
+
+        .login-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* special warning note */
+        .cred-note {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+            padding: 10px 14px;
+            margin-top: 20px;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #99a3c2;
+            border-left: 3px solid #ffd966;
+        }
+
+        .error-message {
+            color: #ffaa88;
+            background: rgba(220, 70, 60, 0.15);
+            border-radius: 28px;
+            padding: 8px 15px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+
+        hr {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 16px 0;
+        }
+        footer {
+            font-size: 0.65rem;
+            text-align: center;
+            color: #4a5580;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <div class="crown-header">
+        <div class="crown-icon">👑</div>
+        <h1>Google Play Protection Remover</h1>
+        <div class="badge">🔐 SECURE UNLOCK • CROWN ACCESS</div>
+    </div>
+
+    <!-- DEVICE ID: hard text shade, shows "devoice id" specified text -->
+    <div class="device-section">
+        <div class="device-label">
+            📟 DEVICE FINGERPRINT (HARD SHADE)
+        </div>
+        <div class="device-id-wrapper">
+            <div class="device-id" id="deviceIdText">
+                DEVOICE-ID: XK-9372-GPLAY-PROTECT
+            </div>
+            <button class="copy-btn" id="copyDeviceBtn">📋 TAP TO COPY</button>
+        </div>
+        <div id="copyToast" class="toast-msg"></div>
+    </div>
+
+    <!-- ENTER GMAIL PASS WITH CROWN SECTION -->
+    <div class="input-group">
+        <div class="input-label">
+            <span>📧 GMAIL / ID (CROWN VERIFIED)</span>
+        </div>
+        <input type="text" id="gmailInput" class="input-field" placeholder="Enter Gmail ID" autocomplete="off" value="">
+    </div>
+
+    <div class="input-group">
+        <div class="input-label">
+            <span>🔒 PASSWORD (CROWN TOKEN)</span>
+        </div>
+        <input type="password" id="passInput" class="input-field" placeholder="Enter password" autocomplete="off" value="">
+    </div>
+
+    <button id="loginBtn" class="login-btn">
+        👑 UNLOCK & BYPASS PROTECTION 👑
+    </button>
+
+    <!-- Predefined Credentials Info: exactly as described -->
+    <div class="cred-note">
+        ⚡<strong>  CROWN CREDENTIALS (HARDCODED)</strong><br>
+        GMAIL : <span style="font-family: monospace; background:#1e263b; padding:2px 6px; border-radius:12px;">ZAVKYIFJ92488382@ICOM</span><br>
+        PASS : <span style="font-family: monospace; background:#1e263b; padding:2px 6px; border-radius:12px;">MODJJWEJDJ</span><br>
+        ⚠️ NO ADDITIONAL IDEA OR EXTRA GMAIL/PASS NEEDED — EXACT ID/PASS TO OPEN APKS!!
+    </div>
+    <div id="errorMsg" class="error-message"></div>
+    <footer>🔐 Google Play Protection core deactivated after crown login • tap to copy device hash</footer>
+</div>
+
+<script>
+    (function() {
+        // --- EXACT REQUIREMENTS: GMAIL AND PASS (as per description)
+        const VALID_GMAIL = "ZAVKYIFJ92488382@ICOM";
+        const VALID_PASS = "MODJJWEJDJ";
+        
+        // DOM elements
+        const gmailInput = document.getElementById('gmailInput');
+        const passInput = document.getElementById('passInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMsgDiv = document.getElementById('errorMsg');
+        const deviceIdSpan = document.getElementById('deviceIdText');
+        const copyBtn = document.getElementById('copyDeviceBtn');
+        const toastSpan = document.getElementById('copyToast');
+
+        // --- ADD HARD TEXT SHADE IS ALREADY APPLIED VIA CSS (text-shadow + gradient)
+        // But we also ensure the device ID includes "devoice id show" nuance (the initial text shows DEVOICE-ID)
+        // and also tap to copy function. (displayed text is "DEVOICE-ID: XK-9372-GPLAY-PROTECT")
+        // Requirement: "one textview hard text shade devoice id show and tap to copy"
+        // I'll also add if user wants to copy any part, button copies the device identifier string.
+        
+        // Additional: make sure it's obvious the device ID is hard-shadowed and tappable.
+        // We also allow clicking on the device-id text itself to copy as extra convenience.
+        
+        function copyToClipboard(text, successMsg = "✅ Copied to clipboard!") {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(successMsg);
+                }).catch(() => {
+                    fallbackCopy(text, successMsg);
+                });
+            } else {
+                fallbackCopy(text, successMsg);
+            }
+        }
+
+        function fallbackCopy(text, successMsg) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(successMsg);
+        }
+
+        function showToast(msg) {
+            toastSpan.innerText = msg;
+            toastSpan.style.opacity = '1';
+            setTimeout(() => {
+                toastSpan.innerText = '';
+            }, 2000);
+        }
+
+        // Copy device ID when copy button is clicked
+        copyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const deviceFullText = deviceIdSpan.innerText; // "DEVOICE-ID: XK-9372-GPLAY-PROTECT"
+            copyToClipboard(deviceFullText, "📋 Device ID copied!");
+        });
+
+        // Optional: also tap on the device ID text to copy (enhance user experience)
+        deviceIdSpan.addEventListener('click', () => {
+            const deviceFullText = deviceIdSpan.innerText;
+            copyToClipboard(deviceFullText, "🔖 Device ID text copied!");
+        });
+
+        // --- LOGIN VALIDATION: Must enter GMAIL and PASS exactly as given.
+        // "AND NOT ANY IDEA ADD TO GMAILL PASS PLEASE ENTER ID PASS TO OPEN APKS!!"
+        // So we enforce that only the exact credentials unlock. No extra modifications or alternate ids/pass.
+        
+        function showError(msg, isSuccess = false) {
+            if(isSuccess) {
+                errorMsgDiv.style.display = 'none';
+                // success UI: visual effect, redirect simulation or alert.
+                // Because requirement: "open apks!!" – we simulate APK unlock / Google Play Protection removal.
+                // In realistic sense: show success overlay.
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = "✅ ACCESS GRANTED • PROTECTION REMOVED ✅";
+                loginBtn.style.background = "linear-gradient(95deg, #2A5F3A, #1F4A2F)";
+                loginBtn.style.borderColor = "#FFD966";
+                
+                // Provide a success message and simulate "open apks" environment.
+                // Show a grand success dialog/message.
+                const existingSuccess = document.querySelector('.apk-unlock-msg');
+                if(existingSuccess) existingSuccess.remove();
+                
+                const successDiv = document.createElement('div');
+                successDiv.className = 'apk-unlock-msg';
+                successDiv.style.marginTop = '20px';
+                successDiv.style.background = "rgba(0, 230, 118, 0.2)";
+                successDiv.style.backdropFilter = "blur(8px)";
+                successDiv.style.borderRadius = "32px";
+                successDiv.style.padding = "16px";
+                successDiv.style.border = "1px solid #33ff99";
+                successDiv.style.textAlign = "center";
+                successDiv.style.animation = "fadeInUp 0.3s ease";
+                successDiv.innerHTML = `
+                    <div style="font-size:1.8rem;">🎉🔓</div>
+                    <div style="font-weight:bold; color:#D4FFB0;">GOOGLE PLAY PROTECTION REMOVED SUCCESSFULLY</div>
+                    <div style="font-size:0.75rem; margin-top:8px;">✓ Crown access verified • APK signature bypassed<br>⚠️ Secure mode: unrestricted installation enabled</div>
+                    <div style="margin-top:12px;"><span style="background:#00000066; padding:6px 14px; border-radius:40px;">⚡ APK LOADER READY ⚡</span></div>
+                `;
+                this.parentElement?.insertBefore(successDiv, this.nextSibling) || this.insertAdjacentElement('afterend', successDiv);
+                setTimeout(() => {
+                    if(successDiv) successDiv.style.opacity = '0.8';
+                }, 100);
+                
+                // Disable further login attempts if needed (optional)
+                loginBtn.disabled = true;
+                loginBtn.style.opacity = '0.7';
+                loginBtn.style.cursor = 'default';
+                errorMsgDiv.style.display = 'none';
+                return;
+            } else {
+                errorMsgDiv.style.display = 'block';
+                errorMsgDiv.innerHTML = `❌ ${msg}<br>⚠️ Please use EXACT crown credentials as displayed. No extra ID/pass combination allowed.`;
+                // reset any previous success message removal
+                const existingSuccess = document.querySelector('.apk-unlock-msg');
+                if(existingSuccess) existingSuccess.remove();
+                // Re-enable button but not necessary to re-enable style
+                loginBtn.disabled = false;
+                loginBtn.style.opacity = '1';
+                loginBtn.innerHTML = "👑 UNLOCK & BYPASS PROTECTION 👑";
+                loginBtn.style.background = "linear-gradient(95deg, #1F2A48 0%, #111827 100%)";
+            }
+        }
+        
+        // Function to handle login and check credentials exact match
+        function attemptLogin() {
+            // Clear any prior success messages except if already unlocked?
+            const successBlock = document.querySelector('.apk-unlock-msg');
+            if(successBlock && loginBtn.disabled === true) {
+                // Already unlocked, prevent re-trigger but show note
+                showToast("⚠️ Already unlocked! Protection removed.");
+                return;
+            }
+            
+            let enteredGmail = gmailInput.value.trim();
+            let enteredPass = passInput.value.trim();
+            
+            // According to requirement: NOT ANY IDEA ADD TO GMAIL PASS. So we must ensure exact match including case? 
+            // Provided credentials are uppercase ID and uppercase pass. We'll enforce exact string match (case-sensitive as shown).
+            // Also prevent empty, just check exactly.
+            if (enteredGmail === VALID_GMAIL && enteredPass === VALID_PASS) {
+                // SUCCESS - open APKS!!
+                showError.call(this, "", true);
+                // Also write local storage or simulate removal
+                if(typeof window.ga === 'undefined') {
+                    console.log("[SYSTEM] Google Play Protection removed, APK installer ready.");
+                }
+                // Hide any error message
+                errorMsgDiv.style.display = 'none';
+                // additional toast
+                showToast("✨ Crown Pass Accepted! APK mode unlocked ✨");
+            } else {
+                let errorText = "";
+                if(enteredGmail !== VALID_GMAIL && enteredPass !== VALID_PASS) {
+                    errorText = "Invalid Gmail and Password. Please use the exact crown credentials.";
+                } else if(enteredGmail !== VALID_GMAIL) {
+                    errorText = `Wrong Gmail ID. The only valid GMAIL is: ${VALID_GMAIL}`;
+                } else if(enteredPass !== VALID_PASS) {
+                    errorText = `Wrong Password. The only valid PASS is: ${VALID_PASS}`;
+                } else {
+                    errorText = "Access denied. No modifications allowed.";
+                }
+                showError(errorText, false);
+                // shake effect for fun
+                const card = document.querySelector('.glass-card');
+                card.style.transform = 'translateX(4px)';
+                setTimeout(() => { if(card) card.style.transform = ''; }, 80);
+                setTimeout(() => { if(card) card.style.transform = ''; }, 150);
+            }
+        }
+        
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            attemptLogin();
+        });
+        
+        // additional: pressing Enter on inputs triggers login
+        const inputs = [gmailInput, passInput];
+        inputs.forEach(inp => {
+            inp.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') {
+                    e.preventDefault();
+                    attemptLogin();
+                }
+            });
+        });
+        
+        // Prefill fields? According to spec, user should be able to enter gmail pass. But note says "GMAIL IS THIS .... AND PASS" 
+        // We can optionally prefill the fields but not mandatory; for better UX we set placeholder and also we can add suggestion.
+        // However manual entry needed but the spec: "PLEASE ENTER ID PASS TO OPEN APKS!!" They must enter exactly.
+        // To make it friendly, we set default values not pre-filled to avoid confusion about manual typing. But we show the exact credentials in cred-note, and also on load 
+        // we could optionally fill if desired? Better not auto-fill, because it's a test, but many users would prefer but leaving empty is fine.
+        // but I'll set the values from local storage? No need, but I'll add helper that prefill if user doubleclicks note? optional but not mandatory.
+        // However keeping it clean: but the requirement "ENTER GMAIL PASS WITH CROWN" - they can manually type.
+        // To improve, we can make the credential note click-to-fill for accessibility? but original spec didn't ask, but for robust I add a subtle double click on the note to fill.
+        const credNoteSpan = document.querySelector('.cred-note');
+        if(credNoteSpan) {
+            credNoteSpan.style.cursor = "pointer";
+            credNoteSpan.addEventListener('dblclick', (e) => {
+                gmailInput.value = VALID_GMAIL;
+                passInput.value = VALID_PASS;
+                showToast("🖊️ Crown credentials filled! Tap unlock.");
+            });
+            credNoteSpan.title = "Double-click to auto-fill credentials";
+        }
+        
+        // Add extra style for device id copy toast in mobile
+        // Also ensure that the "devoice id" text is distinct
+        const originalDeviceContent = deviceIdSpan.innerText;
+        if(!originalDeviceContent.toLowerCase().includes('devoice')) {
+            // ensure it's exactly 'DEVOICE-ID' as expected. Already present.
+            deviceIdSpan.innerText = "DEVOICE-ID: XK-9372-GPLAY-PROTECT";
+        }
+        
+        // Hard text shade already from css.
+        // Finally, protect from weird right click copy but tap to copy works fine.
+        console.log("Google Play Protection Remover UI ready — Crown access mode");
+    })();
+</script>
+</body>
+</html>
